@@ -13,8 +13,8 @@ CHROMA_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
 COLLECTION_NAME = "legal_docs"
 
 # Configure Streamlit page
-st.set_page_config(page_title="Legal RAG - MVP", layout="wide")
-st.title("Legal Document RAG — Upload & Query (MVP)")
+st.set_page_config(page_title="Inscribe.AI", layout="wide")
+st.title("Inscribe.AI")
 
 # Simple password gate (for dev only)
 if "authorized" not in st.session_state:
@@ -33,6 +33,13 @@ if not st.session_state.authorized:
 st.header("Upload files")
 uploaded_files = st.file_uploader("PDF / DOCX / TXT", accept_multiple_files=True)
 uploader_name = st.text_input("Uploader name (optional)")
+
+agree = st.checkbox("I agree to giving consent to Inscribe.AI to process my documents")
+
+if agree:
+    st.info("please check the box to agree before uploading")
+else:
+    st.warning("You must agree before uploading")
 
 if st.button("Ingest files"):
     if not uploaded_files:
@@ -79,3 +86,4 @@ if st.button("Search"):
             #         st.write(f"- {meta.get('source_file', 'unknown')} (chunk {meta.get('chunk', '?')})")
             else:
                 st.write(res)
+
