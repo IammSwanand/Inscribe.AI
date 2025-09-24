@@ -17,4 +17,4 @@ cryptography
 python-dotenv
 streamlit-authenticator
 extra-streamlit-components
-
+schedule
