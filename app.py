@@ -73,9 +73,9 @@ if st.button("Search"):
                 st.markdown("### Answer")
                 st.write(res["result"])
 
-                st.markdown("### Sources")
-                for doc in res.get("source_documents", []):
-                    meta = doc.metadata
-                    st.write(f"- {meta.get('source_file', 'unknown')} (chunk {meta.get('chunk', '?')})")
+            #     st.markdown("### Sources")
+            #     for doc in res.get("source_documents", []):
+            #         meta = doc.metadata
+            #         st.write(f"- {meta.get('source_file', 'unknown')} (chunk {meta.get('chunk', '?')})")
             else:
                 st.write(res)
