@@ -16,3 +16,4 @@ python-magic
 cryptography
 python-dotenv
 streamlit-authenticator
+schedule
