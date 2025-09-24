@@ -16,19 +16,11 @@ COLLECTION_NAME = "legal_docs"
 # Embeddings
 hf = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-
 def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
     """Return RetrievalQA chain using Groq LLM"""
-    
-    # FIX: Create client and vectordb inside the function
+
     client = chromadb.PersistentClient(path=CHROMA_DIR)
-    
-    try:
-        # Using the get_or_create_collection pattern here to be robust
-        collection = client.get_or_create_collection(name=COLLECTION_NAME)
-    except Exception:
-        # Fallback to create if get_or_create fails for any reason
-        collection = client.create_collection(name=COLLECTION_NAME)
+    collection = client.get_or_create_collection(name=COLLECTION_NAME)
 
     vectordb = Chroma(
         persist_directory=CHROMA_DIR,
@@ -36,27 +28,41 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
         collection_name=COLLECTION_NAME,
         client=client,
     )
-    # END OF FIX
 
     llm = ChatGroq(
-          model="llama-3.1-8b-instant",
+        model=model_name,
         groq_api_key=GROQ_API_KEY,
         temperature=0,
         max_tokens=1024,
     )
 
     retriever = vectordb.as_retriever(search_kwargs={"k": 4})
-    
-    # Define a custom prompt template for summarization
+
+    # 🔑 STRICT + STRUCTURED PROMPT
     CUSTOM_PROMPT_TEMPLATE = """
-    You are a helpful assistant. Your task is to provide a concise summary of the provided text.
-    
+    You are highly efficient legal assistant. Use ONLY the context below to answer the question.
+    If the context does not contain the answer, reply: "Not found in the documents."
+
+    Cite the source inline by referencing the source_file and page number in square brackets, 
+    right after the relevant sentence (example: [contract.docx, page 2]).
+
+    Format the response in a clear and structured way with headings and bullet points.
+
+    ---------------------
     Context:
     {context}
-    
-    Summary:
+    ---------------------
+
+    Question:
+    {question}
+
+    Answer (use only the context above):
     """
-    CUSTOM_PROMPT = PromptTemplate(template=CUSTOM_PROMPT_TEMPLATE, input_variables=["context"])
+
+    CUSTOM_PROMPT = PromptTemplate(
+        template=CUSTOM_PROMPT_TEMPLATE,
+        input_variables=["context", "question"]
+    )
 
     qa = RetrievalQA.from_chain_type(
         llm=llm,
@@ -67,7 +73,17 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
     )
     return qa
 
+
 def answer_query(query: str):
     qa = get_retrieval_qa()
     result = qa.invoke({"query": query})
-    return result
+
+    # 🔑 Neatly format results
+    structured_answer = "### 📄 Answer\n" + result["result"] + "\n\n"
+
+    # structured_answer += "### 📚 Sources\n"
+    # for doc in result.get("source_documents", []):
+    #     meta = doc.metadata
+    #     structured_answer += f"- {meta.get('source_file', 'unknown')} (chunk {meta.get('chunk', '?')})\n"
+
+    return {"result": structured_answer}
