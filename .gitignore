@@ -1,2 +1,5 @@
 .venv
 .env
+.chroma_db
+.encrypted_files
+.__pycache__
