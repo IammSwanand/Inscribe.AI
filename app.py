@@ -90,3 +90,27 @@ if st.button("Search"):
             else:
                 st.write(res)
 
+tab1, tab2 = st.sidebar.tabs(["About Us", "Contact Us"])
+
+with tab1:
+    st.write("""
+    # About Inscribe.AI
+    Inscribe.AI is a demo application that allows users to upload legal documents and query them using natural language. 
+    It leverages Groq's LLM capabilities and ChromaDB for vector storage.
+    
+    ## Features
+    - Upload multiple documents (PDF, DOCX, TXT)
+    - Ingest and process documents into vector embeddings
+    - Query documents with natural language questions
+    - Get structured answers with source citations
+    
+    ## Tech Stack
+    - Streamlit for the web interface
+    - Groq LLM for natural language processing
+    - ChromaDB for vector storage and retrieval
+    - LangChain for building the retrieval and QA pipeline
+    - Python for backend processing
+    """)
+
+with tab2:
+    st.write("📧 contact@inscribe.ai")

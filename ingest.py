@@ -5,6 +5,8 @@ from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
 from dotenv import load_dotenv
+import datetime
+import schedule
 
 load_dotenv()
 CHROMA_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
@@ -47,8 +49,8 @@ def ingest_file(filename: str, file_bytes: bytes, uploader: str = "unknown"):
         id_ = f"{filename}__chunk_{i}"
         doc_ids.append(id_)
         texts.append(chunk)
-        metadatas.append({"source_file": filename, "chunk": i, "uploader": uploader})
-
+        #metadatas.append({"source_file": filename, "chunk": i, "uploader": uploader})
+        metadatas.append({"source_file": filename, "chunk": i, "uploader": uploader, "created_at": int(datetime.datetime.now().timestamp())})
     # embeddings (batch)
     embeddings = embedder.encode(texts, show_progress_bar=False, convert_to_numpy=True)
 
