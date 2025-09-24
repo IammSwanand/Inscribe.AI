@@ -47,10 +47,13 @@ if st.button("Ingest files"):
     else:
         status_area = st.empty()
         for f in uploaded_files:
-            b = f.read()
-            status_area.text(f"Ingesting {f.name}...")
-            res = ingest_file(f.name, b, uploader=uploader_name or "unknown")
-            status_area.text(f"Ingested {res['file']}: {res['added']} chunks")
+            if agree:
+                b = f.read()
+                status_area.text(f"Ingesting {f.name}...")
+                res = ingest_file(f.name, b, uploader=uploader_name or "unknown")
+                status_area.text(f"Ingested {res['file']}: {res['added']} chunks")
+            else:
+                st.error("You must agree to the consent checkbox to upload")
         st.success("Done ingesting")
 
 # ---------------- Clear Database ----------------
