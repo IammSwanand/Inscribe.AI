@@ -5,6 +5,9 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_groq import ChatGroq
 from langchain.prompts import PromptTemplate
+from langchain.retrievers import MultiQueryRetriever # For Agentic RAG Implementation
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import LLMChainExtractor
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -35,8 +38,25 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
         temperature=0,
         max_tokens=1024,
     )
-
-    retriever = vectordb.as_retriever(search_kwargs={"k": 4})
+    
+    # Retriever
+    base_retriever = vectordb.as_retriever(search_kwargs={"k":4})
+    
+    #Multi-Query Retriever for Agentic RAG Implementation
+    retriever = MultiQueryRetriever.from_llm(
+        retriever=base_retriever,
+        llm=llm,
+    )
+    
+    # Contextual Compression Retriever
+    compressor = LLMChainExtractor.from_llm(
+        llm
+    )
+    
+    final_retriever = ContextualCompressionRetriever(
+        base_compressor=compressor,
+        base_retriever=retriever
+    )
 
     # 🔑 STRICT + STRUCTURED PROMPT
     CUSTOM_PROMPT_TEMPLATE = """
