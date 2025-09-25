@@ -13,7 +13,7 @@ CHROMA_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_db")
 COLLECTION_NAME = "legal_docs"
 
 # Configure Streamlit page
-st.set_page_config(page_title="Inscribe.AI", layout="wide")
+st.set_page_config(page_title="Inscribe.AI", layout="centered")
 st.title("Inscribe.AI")
 
 # Simple password gate (for dev only)
@@ -82,11 +82,6 @@ if st.button("Search"):
             if isinstance(res, dict) and "result" in res:
                 st.markdown("### Answer")
                 st.write(res["result"])
-
-            #     st.markdown("### Sources")
-            #     for doc in res.get("source_documents", []):
-            #         meta = doc.metadata
-            #         st.write(f"- {meta.get('source_file', 'unknown')} (chunk {meta.get('chunk', '?')})")
             else:
                 st.write(res)
 
