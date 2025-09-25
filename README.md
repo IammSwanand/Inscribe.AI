@@ -1,4 +1,4 @@
-# ⚖️ The Agentic Legal RAG: Document Search & Synthesis Tool
+# ⚖️ Inscribe.AI : Document Search & Synthesis Tool
 
 > **A highly efficient AI tool for legal professionals to rapidly search, sort, and synthesize knowledge from massive document sets.**
 > This project demonstrates an advanced Retrieval-Augmented Generation (RAG) architecture using Groq for real-time, low-latency performance combined together using Langchain.
