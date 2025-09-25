@@ -1,3 +1,4 @@
+# search.py
 import os
 import chromadb
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -5,11 +6,10 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_groq import ChatGroq
 from langchain.prompts import PromptTemplate
-
-from langchain.retrievers import MultiQueryRetriever # For Agentic RAG Implementation
+from langchain.retrievers import MultiQueryRetriever
+# 👈 NEW IMPORTS for Compression
 from langchain.retrievers import ContextualCompressionRetriever
-from langchain.retrievers.document_compressors import LLMChainExtractor
-
+from langchain.retrievers.document_compressors import LLMChainExtractor 
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,6 +20,7 @@ COLLECTION_NAME = "legal_docs"
 
 # Embeddings
 hf = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
 
 def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
     """Return RetrievalQA chain using Groq LLM"""
@@ -41,24 +42,26 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
         max_tokens=1024,
     )
 
-    # Base retriever
-    base_retriever = vectordb.as_retriever(search_kwargs={"k": 10})
-    
-    # Multi-Query Retriever
-    mq_retriever = MultiQueryRetriever.from_retriever(
-        llm=llm,
+    # 1. Base Retriever: Defines how to search the vector store
+    base_retriever = vectordb.as_retriever(search_kwargs={"k": 10}) # 👈 INCREASE K to retrieve more context for the filter
+
+    # 2. MultiQueryRetriever (Query Division): Generates sub-queries
+    mq_retriever = MultiQueryRetriever.from_llm(
         retriever=base_retriever,
+        llm=llm
     )
     
-    # Contextual Compression Retriever
-    compressor = LLMChainExtractor.from_llm(llm)
-    
-    # Final Retruever with compression
+    # --- NEW: Contextual Compression Layer ---
+    # 3. Compressor: Uses the LLM to extract only the highly relevant parts from the retrieved chunks
+    compressor = LLMChainExtractor.from_llm(llm) 
+
+    # 4. Final Retriever: Combines MultiQuery and Compression
+    # This retriever executes MultiQuery first, then passes all chunks to the compressor.
     final_retriever = ContextualCompressionRetriever(
-        base_compressor=compressor,
-        base_retriever=mq_retriever,
+        base_compressor=compressor, 
+        base_retriever=mq_retriever
     )
-    
+    # --- END OF COMPRESSION LAYER ---
 
     # 🔑 STRICT + STRUCTURED PROMPT
     CUSTOM_PROMPT_TEMPLATE = """
@@ -89,7 +92,7 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=retriever,
+        retriever=final_retriever, # 👈 Pass the final, filtered retriever
         return_source_documents=True,
         chain_type_kwargs={"prompt": CUSTOM_PROMPT},
     )
@@ -102,10 +105,8 @@ def answer_query(query: str):
 
     # 🔑 Neatly format results
     structured_answer = "### 📄 Answer\n" + result["result"] + "\n\n"
-
-    # structured_answer += "### 📚 Sources\n"
-    # for doc in result.get("source_documents", []):
-    #     meta = doc.metadata
-    #     structured_answer += f"- {meta.get('source_file', 'unknown')} (chunk {meta.get('chunk', '?')})\n"
+    
+    # NOTE: Since you commented out the source code formatting in your last version, 
+    # I've kept it commented out here.
 
     return {"result": structured_answer}
