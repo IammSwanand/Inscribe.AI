@@ -98,13 +98,6 @@ with tab1:
     - Ingest and process documents into vector embeddings
     - Query documents with natural language questions
     - Get structured answers with source citations
-    
-    ## Tech Stack
-    - Streamlit for the web interface
-    - Groq LLM for natural language processing
-    - ChromaDB for vector storage and retrieval
-    - LangChain for building the retrieval and QA pipeline
-    - Python for backend processing
     """)
 
 with tab2:
