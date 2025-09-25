@@ -67,20 +67,15 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
     CUSTOM_PROMPT_TEMPLATE = """
     You are highly efficient legal assistant. Use ONLY the context below to answer the question.
     If the context does not contain the answer, reply: "Not found in the documents."
-
     Cite the source inline by referencing the source_file and page number in square brackets, 
     right after the relevant sentence (example: [contract.docx, page 2]).
-
     Format the response in a clear and structured way with headings and bullet points.
-
     ---------------------
     Context:
     {context}
     ---------------------
-
     Question:
     {question}
-
     Answer (use only the context above):
     """
 
