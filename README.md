@@ -78,7 +78,7 @@ The application is structured into two main, independently running processes for
 
 You must run the frontend and the data lifecycle scheduler in **separate terminals**.
 
-### 1. Start the Frontend (UI)
+### 1. Start the UI
 
 Run this command in your **first terminal**:
 ```bash
