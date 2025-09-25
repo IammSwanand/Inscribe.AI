@@ -49,10 +49,9 @@ def get_retrieval_qa(model_name="llama-3.1-8b-instant"):
     )
     
     # Contextual Compression Retriever
-    compressor = LLMChainExtractor.from_llm(
-        llm
-    )
+    compressor = LLMChainExtractor.from_llm(llm)
     
+    # Final Retriever with Contextual Compression
     final_retriever = ContextualCompressionRetriever(
         base_compressor=compressor,
         base_retriever=retriever
