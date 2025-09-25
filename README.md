@@ -16,7 +16,7 @@ This application moves beyond basic RAG by incorporating **agentic principles** 
 
 * **🧠 Agentic Retrieval (Multi-Query):** Uses the Groq LLM to decompose complex user questions intelligently (Query Division) into multiple sub-queries, ensuring comprehensive context is retrieved from the VectorDB, leading to more accurate answers.
 * **🎯 Contextual Compression:** Implements an `LLMChainExtractor` (a form of Re-ranking) to filter out irrelevant information retrieved by the Multi-Query step, ensuring the final Groq model only sees the most pertinent chunks.
-* **📄 Hybrid Document Parsing (OCR):** Supports seamless ingestion of digital PDFs, DOCX, and TXT files. It intelligently falls back to **Tesseract OCR** for processing **scanned or handwritten documents**, a critical feature for legal tech.
+* **📄 This document parsing solution utilizes PyPDF and PDFMiner for efficient text extraction from digital PDFs, and intelligently falls back to Tesseract OCR for handling scanned or handwritten documents.
 * **🔒 Persistent & Lifecycle Management:** Data is stored securely and locally in **ChromaDB**. It includes an **7-Day Automatic Buffer** to manage data lifecycle by deleting old documents in a separate, scheduled background process.
 * **⚡ Low-Latency Synthesis:** Leverages the **Groq API** (`llama-3.1-8b-instant`) for blazing-fast answer generation.
 
